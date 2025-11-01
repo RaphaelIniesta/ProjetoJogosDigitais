@@ -19,7 +19,7 @@ public class Projetil {
     }
 
     public void update(float delta) {
-        y += velocidade * delta * 5;
+        y += velocidade * delta * 4.5f;
 
         if (y > Gdx.graphics.getHeight()) {
             ativo = false;
@@ -27,7 +27,7 @@ public class Projetil {
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, x, y, 0.15f, 0.3f);
+        batch.draw(texture, x, y, 0.15f, 0.15f);
     }
 
     public boolean isAtivo() {

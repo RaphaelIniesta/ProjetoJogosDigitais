@@ -32,7 +32,7 @@ public class Main implements ApplicationListener {
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(8, 5);
         fundo = new Texture("Background.png");
-        projetilTexture = new Texture("Rectangle 1.png");
+        projetilTexture = new Texture("rock1.png");
         player = new PlayerObject(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 1f, 1f, viewport, projetilTexture);
 
         // Iniciar música
