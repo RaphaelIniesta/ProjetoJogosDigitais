@@ -3,6 +3,7 @@ package br.mackenzie;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -18,7 +19,7 @@ public class Main implements ApplicationListener {
     SpriteBatch spriteBatch;
     FitViewport viewport;
     PlayerObject player;
-
+    Music music;
     // Fundo
     Texture fundo;
 
@@ -33,6 +34,12 @@ public class Main implements ApplicationListener {
         fundo = new Texture("Background.png");
         projetilTexture = new Texture("Rectangle 1.png");
         player = new PlayerObject(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 1f, 1f, viewport, projetilTexture);
+
+        // Iniciar música
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.wav"));
+        music.setLooping(true);
+        music.setVolume(0.5f);
+        music.play();
 
         // Inicia a thread de leitura serial
         // Mude "COM3" para a porta do seu Arduino
