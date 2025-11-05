@@ -33,12 +33,12 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(8, 5);
         fundo = new Texture("Background.png");
         projetilTexture = new Texture("rock1.png");
-        player = new PlayerObject(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 1f, 1f, viewport, projetilTexture);
+        player = new PlayerObject(viewport.getWorldWidth() / 2.25f, viewport.getWorldHeight() / 6, 1f, 1f, viewport, projetilTexture);
 
         // Iniciar música
         music = Gdx.audio.newMusic(Gdx.files.internal("music.wav"));
         music.setLooping(true);
-        music.setVolume(0.5f);
+        music.setVolume(0.0f);
         music.play();
 
         // Inicia a thread de leitura serial

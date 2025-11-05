@@ -18,7 +18,9 @@ public class PlayerObject extends GameObject {
     private Texture projetilTexture;
     private Viewport viewport;
     private float fundoOffsetY;
-    private float velocidadeParalaxe = 0.75f;
+    private float velocidadeParalaxe = 0.0f;
+    private float maxSpeed = 1;
+    private int lives = 3;
 
     public PlayerObject(float x, float y, float width, float height, Viewport viewport, Texture projetilTexture) {
         super(x, y, width, height);
@@ -62,24 +64,31 @@ public class PlayerObject extends GameObject {
         }
 
         if (up) {
-            velocidadeParalaxe = 1f;
-            y += velocidade * delta;
+            if(velocidadeParalaxe < maxSpeed) {
+                velocidadeParalaxe += 0.2f;
+            }
+//            y += velocidade * delta;
             stateTime += delta;
-        } else if (down) {
-            velocidadeParalaxe = 0.5f;
-            y -= velocidade * delta;
+        }
+        if (down) {
+            velocidadeParalaxe -= 0.2f;
+//            y -= velocidade * delta;
             stateTime += delta;
-        } else if (left) {
+        }
+        if (left && velocidadeParalaxe > 0.01f) {
             x -= velocidade * delta;
-            stateTime += delta;
-        } else if (right) {
+//            stateTime += delta;
+        }
+        if (right && velocidadeParalaxe > 0.01f) {
             x += velocidade * delta;
-            stateTime += delta;
+//            stateTime += delta;
         }
 
         frameAtual = animacaoCorrida.getKeyFrame(stateTime, true);
         fundoOffsetY -= velocidade * delta * velocidadeParalaxe;
-        velocidadeParalaxe = 0.75f;
+        if(velocidadeParalaxe > 0.01f) {
+            velocidadeParalaxe -= 0.01f;
+        }
     }
 
     private void logic(float delta) {
