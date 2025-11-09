@@ -14,13 +14,14 @@ public class PlayerObject extends GameObject {
     private Animation<TextureRegion> animacaoCorrida;
     private float stateTime;
     private TextureRegion frameAtual;
-    private Array<Projetil> projeteis;
+    Array<Projetil> projeteis;
     private Texture projetilTexture;
     private Viewport viewport;
     private float fundoOffsetY;
     private float velocidadeParalaxe = 0.0f;
-    private float maxSpeed = 1;
+    private float maxSpeed = 10;
     private int lives = 3;
+    private int score = 0;
 
     public PlayerObject(float x, float y, float width, float height, Viewport viewport, Texture projetilTexture) {
         super(x, y, width, height);
@@ -52,7 +53,7 @@ public class PlayerObject extends GameObject {
     }
 
     private void input(float delta) {
-        float velocidade = 2f;
+        float velocidade = 20f;
 
         boolean right = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean left = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
@@ -65,29 +66,31 @@ public class PlayerObject extends GameObject {
 
         if (up) {
             if(velocidadeParalaxe < maxSpeed) {
-                velocidadeParalaxe += 0.2f;
+                velocidadeParalaxe += 2f;
             }
 //            y += velocidade * delta;
             stateTime += delta;
         }
         if (down) {
-            velocidadeParalaxe -= 0.2f;
+            if(velocidadeParalaxe > 0f) {
+                velocidadeParalaxe -= 2f;
+            }
 //            y -= velocidade * delta;
             stateTime += delta;
         }
-        if (left && velocidadeParalaxe > 0.01f) {
-            x -= velocidade * delta;
+        if (left && velocidadeParalaxe > 1f) {
+            x -= (velocidade * delta) * 10;
 //            stateTime += delta;
         }
-        if (right && velocidadeParalaxe > 0.01f) {
-            x += velocidade * delta;
+        if (right && velocidadeParalaxe > 1f) {
+            x += (velocidade * delta) * 10;
 //            stateTime += delta;
         }
 
         frameAtual = animacaoCorrida.getKeyFrame(stateTime, true);
         fundoOffsetY -= velocidade * delta * velocidadeParalaxe;
-        if(velocidadeParalaxe > 0.01f) {
-            velocidadeParalaxe -= 0.01f;
+        if(velocidadeParalaxe >= 1f) {
+            velocidadeParalaxe -= 1f;
         }
     }
 
@@ -110,7 +113,7 @@ public class PlayerObject extends GameObject {
     }
 
     private void dispararProjetil() {
-        float spawnX = x + width / 2 - 0.1f;
+        float spawnX = x + width / 2 - 1f;
         float spawnY = y + height;
         projeteis.add(new Projetil(spawnX, spawnY, projetilTexture));
     }
@@ -118,4 +121,31 @@ public class PlayerObject extends GameObject {
     public float getFundoOffsetY() {
         return fundoOffsetY;
     }
+
+    public void checkCollisionWithObstacle(ObstacleObject obstacle) {
+        if (obstacle.isActive() && bounds.overlaps(obstacle.getBounds())) {
+            lives--;
+            obstacle.destroy(); // Se quiser que o obstáculo desapareça ao colidir com o jogador
+            System.out.println("Colisão! Vidas restantes: " + lives);
+
+            if (lives <= 0) {
+                active = false;
+                System.out.println("Jogador derrotado!");
+            }
+        }
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+
+    public void addScore(int amount) {
+        score += amount;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
 }
