@@ -148,4 +148,7 @@ public class PlayerObject extends GameObject {
         return score;
     }
 
+    public void takeDamage(int amount) {
+        this.lives -= amount;
+    }
 }

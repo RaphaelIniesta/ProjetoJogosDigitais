@@ -32,7 +32,8 @@ public class Main implements ApplicationListener {
 
     // Obstáculos
     Array<ObstacleObject> obstacles;
-    Texture obstacleTexture;
+    Array<Projetil> enemyProjectiles;
+    Texture[][] obstacleTextures;
     BitmapFont font;
     int scoreToAdd = 100;
 
@@ -40,6 +41,9 @@ public class Main implements ApplicationListener {
     private Stage uiStage;
     private Label vidas;
     private Label score;
+
+    float elapsedTime = 0f; // adicione como atributo na classe Main
+    public static int difficultyLevel = 2;
 
     @Override
     public void create() {
@@ -49,6 +53,8 @@ public class Main implements ApplicationListener {
         projetilTexture = new Texture("rock1.png");
         player = new PlayerObject(viewport.getWorldWidth() / 2.25f, viewport.getWorldHeight() / 6, 100f, 100f, viewport, projetilTexture);
         uiStage = new Stage(viewport);
+        obstacleTextures = new Texture[3][3];
+        enemyProjectiles = new Array<>();
 
         // Iniciar música
         music = Gdx.audio.newMusic(Gdx.files.internal("music.wav"));
@@ -72,13 +78,31 @@ public class Main implements ApplicationListener {
 //        arduinoReader = new ArduinoReaderThread("COM3");
 //        arduinoReader.start();
 
-        obstacleTexture = new Texture("Rectangle 11.png");
+        obstacleTextures[0][0] = new Texture("tora1.png");
+        obstacleTextures[0][1] = new Texture("tora2.png");
+        obstacleTextures[0][2] = new Texture("tora3.png");
+
+        obstacleTextures[1][0] = new Texture("lixo1.png");
+        obstacleTextures[1][1] = new Texture("lixo2.png");
+        obstacleTextures[1][2] = new Texture("lixo3.png");
+
+        obstacleTextures[2][0] = new Texture("sapo1.png");
+        obstacleTextures[2][1] = new Texture("sapo2.png");
+        obstacleTextures[2][2] = new Texture("sapo3.png");
+
         obstacles = new Array<>();
 
         for (int i = 0; i < 5; i++) {
-            float ox = MathUtils.random(0, viewport.getWorldWidth() - 1f);
-            float oy = MathUtils.random(2f, viewport.getWorldHeight() * 2); // acima da tela
-            obstacles.add(new ObstacleObject(ox, oy, 80f, 80f, obstacleTexture, viewport.getWorldWidth(), viewport.getWorldHeight()));
+            int type = 0; // Começa com os simples
+            float ox = MathUtils.random(0, viewport.getWorldWidth() - 80f);
+            float oy = MathUtils.random(viewport.getWorldHeight(), viewport.getWorldHeight() * 2);
+            obstacles.add(new ObstacleObject(ox, oy, 80f, 80f, obstacleTextures, viewport.getWorldWidth(), viewport.getWorldHeight(), type));
+            obstacles.peek().setShootListener((ex, ey) -> {
+                Projetil enemyProj = new Projetil(ex, ey, projetilTexture);
+                enemyProj.setSpeed(-45f); // vai para baixo
+                enemyProjectiles.add(enemyProj);
+            });
+
         }
 
     }
@@ -96,6 +120,37 @@ public class Main implements ApplicationListener {
 
         uiStage.act(delta);
         uiStage.draw();
+
+        // Aumenta dificuldade gradualmente
+        if (elapsedTime > 30 && difficultyLevel < 1) difficultyLevel = 1;
+        if (elapsedTime > 60 && difficultyLevel < 2) difficultyLevel = 2;
+
+        player.update(delta);
+        uiStage.act(delta);
+        uiStage.draw();
+
+        for (ObstacleObject o : obstacles) {
+            o.update(delta);
+
+            // Filtro de spawn (tipos disponíveis)
+            if (o.getType() > difficultyLevel) {
+                o.destroy(); // ainda não liberado
+                continue;
+            }
+
+            player.checkCollisionWithObstacle(o);
+
+            for (Projetil p : new Array<>(player.projeteis)) {
+                if (o.isActive() && p.isAtivo() && o.collidesWith(p.getBounds())) {
+                    o.hit(); // reduz vida do obstáculo
+                    p.destroy();
+                    if (!o.isActive()) {
+                        player.addScore(scoreToAdd);
+                        System.out.println("Obstáculo destruído! Pontuação: " + player.getScore());
+                    }
+                }
+            }
+        }
 
         // Atualiza obstáculos
         for (ObstacleObject o : obstacles) {
@@ -120,6 +175,21 @@ public class Main implements ApplicationListener {
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
 
+        for (Projetil ep : new Array<>(enemyProjectiles)) {
+            ep.update(delta);
+            if (!ep.isAtivo()) {
+                enemyProjectiles.removeValue(ep, true);
+                continue;
+            }
+
+            // Colisão com o jogador
+            if (player.getBounds().overlaps(ep.getBounds())) {
+                ep.destroy();
+                player.takeDamage(1);
+                System.out.println("O jogador foi atingido!");
+            }
+        }
+
         spriteBatch.begin();
         // Fundo
         float fundoWidth = viewport.getWorldWidth();
@@ -133,6 +203,10 @@ public class Main implements ApplicationListener {
         // Desenha os obstáculos
         for (ObstacleObject o : obstacles) {
             o.draw(spriteBatch);
+        }
+
+        for (Projetil ep : enemyProjectiles) {
+            ep.draw(spriteBatch);
         }
 
         player.draw(spriteBatch);
@@ -153,7 +227,6 @@ public class Main implements ApplicationListener {
         fundo.dispose();
         for (TextureRegion t : animacaoCorrida.getKeyFrames()) t.getTexture().dispose();
         font.dispose();
-        obstacleTexture.dispose();
         for (ObstacleObject o : obstacles) o.dispose();
 
     }

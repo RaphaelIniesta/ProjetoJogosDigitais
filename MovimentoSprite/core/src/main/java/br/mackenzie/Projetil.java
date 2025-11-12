@@ -13,6 +13,7 @@ public class Projetil {
     private boolean ativo = true;
     private Texture texture;
     private Rectangle bounds;
+    private float speed = 45;
 
     public Projetil(float x, float y, Texture texture) {
         this.x = x;
@@ -22,7 +23,7 @@ public class Projetil {
     }
 
     public void update(float delta) {
-        y += velocidade * delta * 45f;
+        y += velocidade * delta * speed;
         bounds.setPosition(x, y);
 
         if (y > Gdx.graphics.getHeight()) {
@@ -50,4 +51,9 @@ public class Projetil {
     public void dispose() {
         texture.dispose();
     }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
 }
