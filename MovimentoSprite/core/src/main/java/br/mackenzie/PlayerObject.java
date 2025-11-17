@@ -23,6 +23,19 @@ public class PlayerObject extends GameObject {
     private int lives = 3;
     private int score = 0;
 
+    // Controle de velocidade através do "double tap"
+    private float speedMultiplier = 1.0f;
+    private long lastTapTime = 0;
+
+    // Velocidade horizontal/vertical dependendo do seu jogo
+    private float velocityY = 0f;
+
+    // Constantes do sistema de aceleração
+    private static final float ACCELERATION = 120f;   // Ajuste conforme quiser
+    private static final float DRAG = 0.94f;          // Fricção
+    private static final float MAX_SPEED = 600f;      // Velocidade máxima real
+
+
     public PlayerObject(float x, float y, float width, float height, Viewport viewport, Texture projetilTexture) {
         super(x, y, width, height);
         this.viewport = viewport;
@@ -57,7 +70,7 @@ public class PlayerObject extends GameObject {
 
         boolean right = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean left = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
-        boolean up = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
+        boolean up = Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W);
         boolean down = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -66,14 +79,14 @@ public class PlayerObject extends GameObject {
 
         if (up) {
             if(velocidadeParalaxe < maxSpeed) {
-                velocidadeParalaxe += 2f;
+                velocidadeParalaxe += 4f;
             }
 //            y += velocidade * delta;
             stateTime += delta;
         }
         if (down) {
             if(velocidadeParalaxe > 0f) {
-                velocidadeParalaxe -= 2f;
+                velocidadeParalaxe -= 4f;
             }
 //            y -= velocidade * delta;
             stateTime += delta;
@@ -89,8 +102,8 @@ public class PlayerObject extends GameObject {
 
         frameAtual = animacaoCorrida.getKeyFrame(stateTime, true);
         fundoOffsetY -= velocidade * delta * velocidadeParalaxe;
-        if(velocidadeParalaxe >= 1f) {
-            velocidadeParalaxe -= 1f;
+        if(velocidadeParalaxe >= 0.1f) {
+            velocidadeParalaxe -= 0.1f;
         }
     }
 
