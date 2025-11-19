@@ -81,23 +81,19 @@ public class PlayerObject extends GameObject {
             if(velocidadeParalaxe < maxSpeed) {
                 velocidadeParalaxe += 4f;
             }
-//            y += velocidade * delta;
             stateTime += delta;
         }
         if (down) {
             if(velocidadeParalaxe > 0f) {
                 velocidadeParalaxe -= 4f;
             }
-//            y -= velocidade * delta;
             stateTime += delta;
         }
         if (left && velocidadeParalaxe > 1f) {
             x -= (velocidade * delta) * 10;
-//            stateTime += delta;
         }
         if (right && velocidadeParalaxe > 1f) {
             x += (velocidade * delta) * 10;
-//            stateTime += delta;
         }
 
         frameAtual = animacaoCorrida.getKeyFrame(stateTime, true);
