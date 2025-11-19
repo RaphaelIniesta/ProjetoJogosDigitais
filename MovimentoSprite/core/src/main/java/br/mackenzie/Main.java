@@ -35,12 +35,10 @@ public class Main implements ApplicationListener {
     Array<Projetil> enemyProjectiles;
     Texture[][] obstacleTextures;
     BitmapFont font;
-    int scoreToAdd = 100;
 
     // Labels
     private Stage uiStage;
     private Label vidas;
-    private Label score;
 
     float elapsedTime = 0f; // adicione como atributo na classe Main
     public static int difficultyLevel = 2;
@@ -51,7 +49,7 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(800, 500);
         fundo = new Texture("Background.png");
         projetilTexture = new Texture("rock1.png");
-        player = new PlayerObject(viewport.getWorldWidth() / 2.25f, viewport.getWorldHeight() / 6, 100f, 100f, viewport, projetilTexture);
+        player = new PlayerObject(viewport.getWorldWidth() / 2.25f, viewport.getWorldHeight() / 6, 100f, 150f, viewport, projetilTexture);
         uiStage = new Stage(viewport);
         obstacleTextures = new Texture[3][3];
         enemyProjectiles = new Array<>();
@@ -68,10 +66,8 @@ public class Main implements ApplicationListener {
 
         vidas = new Label("Vidas: ", style);
 
-        score = new Label("Score: ", style);
 
         uiStage.addActor(vidas);
-        uiStage.addActor(score);
 
         // Inicia a thread de leitura serial
         // Mude "COM3" para a porta do seu Arduino
@@ -118,6 +114,11 @@ public class Main implements ApplicationListener {
         float delta = Gdx.graphics.getDeltaTime();
         player.update(delta);
 
+        if (player.getLives() <= 0) {
+            Gdx.app.exit();
+            return;
+        }
+
         uiStage.act(delta);
         uiStage.draw();
 
@@ -144,10 +145,6 @@ public class Main implements ApplicationListener {
                 if (o.isActive() && p.isAtivo() && o.collidesWith(p.getBounds())) {
                     o.hit(); // reduz vida do obstáculo
                     p.destroy();
-                    if (!o.isActive()) {
-                        player.addScore(scoreToAdd);
-                        System.out.println("Obstáculo destruído! Pontuação: " + player.getScore());
-                    }
                 }
             }
         }
@@ -164,8 +161,6 @@ public class Main implements ApplicationListener {
                 if (o.isActive() && p.isAtivo() && o.collidesWith(p.getBounds())) {
                     o.destroy();
                     p.destroy();
-                    player.addScore(scoreToAdd);
-                    System.out.println("Obstáculo destruído! Pontuação: " + player.getScore());
                 }
             }
         }
@@ -212,8 +207,6 @@ public class Main implements ApplicationListener {
         player.draw(spriteBatch);
 
         font.draw(spriteBatch, "Vidas: " + player.getLives(), 0.2f, viewport.getWorldHeight() - 0.2f);
-        font.draw(spriteBatch, "Pontos: " + player.getScore(), 0.2f, viewport.getWorldHeight() - 0.6f);
-
         spriteBatch.end();
     }
 

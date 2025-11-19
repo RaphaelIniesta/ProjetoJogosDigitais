@@ -44,7 +44,7 @@ public class PlayerObject extends GameObject {
 
         TextureRegion[] frames = new TextureRegion[12];
         for (int i = 0; i < 12; i++) {
-            Texture t = new Texture("Rectangle " + (i + 1) + ".png");
+            Texture t = new Texture("Player.png");
             frames[i] = new TextureRegion(t);
         }
         animacaoCorrida = new Animation<>(0.1f, frames);
@@ -70,7 +70,7 @@ public class PlayerObject extends GameObject {
 
         boolean right = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean left = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
-        boolean up = Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W);
+        boolean up = Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.W);
         boolean down = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
